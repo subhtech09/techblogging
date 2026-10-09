@@ -1,0 +1,35 @@
+{%- comment -%}
+  Usage: {% include post-card.html post=post %}                — standard card
+         {% include post-card.html post=post featured=true %}  — large horizontal card
+  (Variables are prefixed with pc_ because Liquid `assign` is global.)
+{%- endcomment -%}
+{%- assign pc_post = include.post -%}
+{%- assign pc_topic_key = pc_post.category | default: pc_post.categories.first -%}
+{%- assign pc_topic = site.data.topics[pc_topic_key] -%}
+{%- assign pc_words = pc_post.content | strip_html | number_of_words -%}
+{%- assign pc_minutes = pc_words | times: 1.0 | divided_by: site.words_per_minute | ceil | at_least: 1 -%}
+{%- assign pc_has_image = false -%}
+{%- if pc_post.image and pc_post.image != site.og_default_image -%}{%- assign pc_has_image = true -%}{%- endif -%}
+<article class="card post-card{% if include.featured %} post-card--featured{% endif %}" data-topic="{{ pc_topic_key }}">
+  <div class="post-card-media{% unless pc_has_image %} post-card-media--placeholder{% endunless %}">
+    {%- if pc_has_image %}
+    <img src="{{ pc_post.image | relative_url }}" alt="" loading="lazy" decoding="async">
+    {%- else %}
+    {% include icon.html name=pc_topic.icon %}
+    {%- endif %}
+  </div>
+  <div class="post-card-body">
+    <div class="post-card-meta">
+      {%- if pc_topic %}
+      <a class="chip" href="{{ '/topics/' | append: pc_topic_key | append: '/' | relative_url }}">{{ pc_topic.name }}</a>
+      {%- endif %}
+      <span>{{ pc_minutes }} min read</span>
+    </div>
+    <h3 class="post-card-title"><a href="{{ pc_post.url | relative_url }}">{{ pc_post.title | escape }}</a></h3>
+    <p class="post-card-excerpt">{{ pc_post.description | default: pc_post.excerpt | strip_html | strip_newlines | truncatewords: 40 }}</p>
+    <div class="post-card-footer">
+      <time datetime="{{ pc_post.date | date_to_xmlschema }}">{{ pc_post.date | date: "%b %-d, %Y" }}</time>
+      <span class="read-more" aria-hidden="true">Read {% include icon.html name="arrow-right" %}</span>
+    </div>
+  </div>
+</article>

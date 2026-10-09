@@ -1,0 +1,100 @@
+---
+layout: default
+---
+{%- assign home_hero = page.hero -%}
+{%- assign home_author = site.data.authors[site.author] -%}
+<section class="hero band-dark">
+  <div class="container hero-inner">
+    <div class="hero-copy">
+      <p class="eyebrow">{{ home_hero.eyebrow | default: site.tagline }}</p>
+      <h1>{{ home_hero.title | default: site.title }}</h1>
+      <p class="hero-lede">{{ home_hero.lede | default: site.description }}</p>
+      <div class="hero-actions">
+        <a class="btn btn-primary" href="{{ '/blog/' | relative_url }}">Read the articles {% include icon.html name="arrow-right" %}</a>
+        <a class="btn btn-ghost" href="{{ '/topics/' | relative_url }}">Browse topics</a>
+      </div>
+      {%- assign home_latest = site.posts.first -%}
+      {%- if home_latest %}
+      <a class="hero-latest" href="{{ home_latest.url | relative_url }}">
+        <span class="hero-latest-badge">New</span>
+        <span class="hero-latest-title">{{ home_latest.title | escape }}</span>
+        {% include icon.html name="arrow-right" %}
+      </a>
+      {%- endif %}
+    </div>
+    <div class="hero-art">{% include hero-diagram.html %}</div>
+  </div>
+</section>
+
+{%- if site.posts.size > 0 %}
+{%- assign home_featured = site.posts | where: "featured", true | first -%}
+{%- unless home_featured %}{% assign home_featured = site.posts.first %}{% endunless %}
+<section class="section">
+  <div class="container">
+    <div class="section-head">
+      <div>
+        <p class="eyebrow">Featured</p>
+        <h2 class="section-title">Start here</h2>
+      </div>
+    </div>
+    {% include post-card.html post=home_featured featured=true %}
+  </div>
+</section>
+
+{%- assign home_recent = site.posts | where_exp: "p", "p.url != home_featured.url" -%}
+{%- if home_recent.size > 0 %}
+<section class="section section--alt">
+  <div class="container">
+    <div class="section-head">
+      <div>
+        <p class="eyebrow">Latest</p>
+        <h2 class="section-title">Recent articles</h2>
+      </div>
+      <a class="link-arrow" href="{{ '/blog/' | relative_url }}">All articles {% include icon.html name="arrow-right" %}</a>
+    </div>
+    <div class="post-grid">
+      {%- for post in home_recent limit: 6 %}
+      {% include post-card.html post=post %}
+      {%- endfor %}
+    </div>
+  </div>
+</section>
+{%- endif %}
+{%- endif %}
+
+<section class="section">
+  <div class="container">
+    <div class="section-head">
+      <div>
+        <p class="eyebrow">Topics</p>
+        <h2 class="section-title">Three pillars of the modern data &amp; AI stack</h2>
+      </div>
+      <a class="link-arrow" href="{{ '/topics/' | relative_url }}">All topics {% include icon.html name="arrow-right" %}</a>
+    </div>
+    <div class="topic-grid">
+      {%- for home_topic in site.data.topics %}
+      {%- assign home_topic_key = home_topic[0] %}
+      {% include topic-card.html key=home_topic_key %}
+      {%- endfor %}
+    </div>
+  </div>
+</section>
+
+<section class="section section--flush">
+  <div class="container">
+    <div class="cta-band band-dark">
+      <div class="cta-copy">
+        <h2>Never miss a new blueprint</h2>
+        <p>Subscribe with any feed reader to get new articles as soon as they are published.</p>
+      </div>
+      <div class="cta-actions">
+        <a class="btn btn-primary" href="{{ '/feed.xml' | relative_url }}">{% include icon.html name="rss" %} Subscribe via RSS</a>
+        {%- if home_author.links.linkedin and home_author.links.linkedin != "" %}
+        <a class="btn btn-ghost" href="{{ home_author.links.linkedin }}">{% include icon.html name="linkedin" %} Follow on LinkedIn</a>
+        {%- elsif home_author.links.github and home_author.links.github != "" %}
+        <a class="btn btn-ghost" href="{{ home_author.links.github }}">{% include icon.html name="github" %} Follow on GitHub</a>
+        {%- endif %}
+      </div>
+    </div>
+  </div>
+</section>

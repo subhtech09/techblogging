@@ -1,0 +1,96 @@
+# =============================================================================
+#  Site settings — edit this block first
+# =============================================================================
+title: The Data Blueprint
+tagline: Data architecture, data engineering & AI engineering
+description: >-
+  Diagram-first deep dives on designing data platforms, building reliable
+  pipelines and shipping AI systems to production.
+author: subhasis            # key into _data/authors.yml
+lang: en
+timezone: UTC               # set to your local zone, e.g. Asia/Kolkata
+
+# -----------------------------------------------------------------------------
+#  GitHub Pages address
+#  Repo "techblogging" is a *project site*  ->  https://subhtech09.github.io/techblogging
+#  If you rename the repo to "subhtech09.github.io" (a *user site*), or use a
+#  custom domain, set  baseurl: ""  and update url accordingly.
+# -----------------------------------------------------------------------------
+url: "https://subhtech09.github.io"
+baseurl: "/techblogging"
+
+# Default social-preview image (used when a post has no `image:`)
+og_default_image: /assets/images/og-default.jpg
+
+twitter:
+  card: summary_large_image
+
+# =============================================================================
+#  Posts
+# =============================================================================
+permalink: /blog/:title/
+future: false               # posts dated in the future stay unpublished
+words_per_minute: 200
+
+defaults:
+  - scope:
+      path: ""
+    values:
+      image: /assets/images/og-default.jpg
+  - scope:
+      path: ""
+      type: posts
+    values:
+      layout: post
+      author: subhasis
+      toc: true
+      share: true
+      comments: true
+
+# =============================================================================
+#  Markdown & code highlighting (GitHub Pages defaults)
+# =============================================================================
+markdown: kramdown
+highlighter: rouge
+kramdown:
+  input: GFM
+  hard_wrap: false
+  auto_ids: true
+  syntax_highlighter: rouge
+
+# =============================================================================
+#  Plugins — only GitHub Pages–whitelisted plugins are used
+# =============================================================================
+plugins:
+  - jekyll-feed
+  - jekyll-seo-tag
+  - jekyll-sitemap
+
+feed:
+  path: feed.xml
+
+# =============================================================================
+#  Optional: comments via giscus (GitHub Discussions). See README.md.
+# =============================================================================
+giscus:
+  enabled: false
+  repo: subhtech09/techblogging
+  repo_id: ""
+  category: Announcements
+  category_id: ""
+  mapping: pathname
+
+# =============================================================================
+#  Build
+# =============================================================================
+theme: null                 # this site ships its own layouts; don't load GitHub's default theme
+
+exclude:
+  - README.md
+  - Gemfile
+  - Gemfile.lock
+  - vendor
+  - node_modules
+  - tools
+  - .jekyll-cache
+  - .sass-cache

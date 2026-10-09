@@ -1,0 +1,17 @@
+{%- comment -%} Usage: {% include social-links.html author=some_author class="..." %} {%- endcomment -%}
+{%- assign sl_links = include.author.links -%}
+<div class="social-links {{ include.class }}">
+  {%- if sl_links.github and sl_links.github != "" %}
+  <a class="social-link" href="{{ sl_links.github }}" aria-label="GitHub" title="GitHub">{% include icon.html name="github" %}</a>
+  {%- endif %}
+  {%- if sl_links.linkedin and sl_links.linkedin != "" %}
+  <a class="social-link" href="{{ sl_links.linkedin }}" aria-label="LinkedIn" title="LinkedIn">{% include icon.html name="linkedin" %}</a>
+  {%- endif %}
+  {%- if sl_links.x and sl_links.x != "" %}
+  <a class="social-link" href="{{ sl_links.x }}" aria-label="X (Twitter)" title="X (Twitter)">{% include icon.html name="x" %}</a>
+  {%- endif %}
+  {%- if sl_links.email and sl_links.email != "" %}
+  <a class="social-link" href="mailto:{{ sl_links.email }}" aria-label="Email" title="Email">{% include icon.html name="mail" %}</a>
+  {%- endif %}
+  <a class="social-link" href="{{ '/feed.xml' | relative_url }}" aria-label="RSS feed" title="RSS feed">{% include icon.html name="rss" %}</a>
+</div>

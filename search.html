@@ -1,0 +1,39 @@
+---
+layout: page
+title: Search
+eyebrow: Find an article
+description: Search titles, descriptions, tags and full article text.
+permalink: /search/
+prose: false
+sitemap: false
+scripts:
+  - /assets/js/search.js
+---
+<div class="search" id="search" data-index="{{ '/search.json' | relative_url }}?v={{ site.time | date: '%s' }}">
+  <form class="search-box" role="search" action="{{ '/search/' | relative_url }}" method="get">
+    <label class="visually-hidden" for="search-input">Search articles</label>
+    {% include icon.html name="search" %}
+    <input class="search-input" id="search-input" name="q" type="search" placeholder="Try “lakehouse”, “idempotent” or “RAG”…" autocomplete="off" spellcheck="false">
+  </form>
+  <p class="search-status" id="search-status" role="status" aria-live="polite"></p>
+  <ol class="search-results" id="search-results"></ol>
+
+  <div class="search-browse" id="search-browse">
+    <h2 class="footer-heading">Browse by topic</h2>
+    <div class="tag-cloud">
+      {%- for search_topic in site.data.topics %}
+      <a class="chip" href="{{ '/topics/' | append: search_topic[0] | append: '/' | relative_url }}">{{ search_topic[1].name }}</a>
+      {%- endfor %}
+    </div>
+    {%- assign search_tags = site.tags | sort %}
+    {%- if search_tags.size > 0 %}
+    <h2 class="footer-heading">Popular tags</h2>
+    <div class="tag-cloud">
+      {%- for search_tag in search_tags %}
+      <a class="tag" href="{{ '/tags/' | relative_url }}#{{ search_tag[0] | slugify }}">#{{ search_tag[0] }}</a>
+      {%- endfor %}
+    </div>
+    {%- endif %}
+  </div>
+  <noscript><p class="search-status">Search needs JavaScript. You can still browse by <a href="{{ '/topics/' | relative_url }}">topic</a> or <a href="{{ '/tags/' | relative_url }}">tag</a>.</p></noscript>
+</div>

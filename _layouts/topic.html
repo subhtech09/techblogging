@@ -1,0 +1,37 @@
+---
+layout: default
+---
+{%- assign topic_key = page.topic -%}
+{%- assign topic_data = site.data.topics[topic_key] -%}
+{%- assign topic_posts = site.posts | where_exp: "p", "p.categories contains topic_key" -%}
+<section class="page-hero band-dark">
+  <div class="container">
+    <nav class="breadcrumbs" aria-label="Breadcrumb">
+      <a href="{{ '/' | relative_url }}">Home</a>
+      <span aria-hidden="true">/</span>
+      <a href="{{ '/topics/' | relative_url }}">Topics</a>
+    </nav>
+    <div class="page-hero-icon">{% include icon.html name=topic_data.icon %}</div>
+    <h1>{{ topic_data.name | default: page.title }}</h1>
+    <p class="page-lede">{{ topic_data.description | default: page.description }}</p>
+    <p class="page-meta">{{ topic_posts.size }} article{% if topic_posts.size != 1 %}s{% endif %}</p>
+  </div>
+</section>
+
+<section class="section section--page">
+  <div class="container">
+    {%- if topic_posts.size > 0 %}
+    <div class="post-grid">
+      {%- for post in topic_posts %}
+      {% include post-card.html post=post %}
+      {%- endfor %}
+    </div>
+    {%- else %}
+    <div class="empty-state">
+      <p>The first article on {{ topic_data.name }} is on its way.</p>
+      <a class="btn btn-outline" href="{{ '/blog/' | relative_url }}">Browse all articles</a>
+    </div>
+    {%- endif %}
+    {{ content }}
+  </div>
+</section>

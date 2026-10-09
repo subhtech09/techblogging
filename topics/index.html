@@ -1,0 +1,14 @@
+---
+layout: page
+title: Topics
+eyebrow: Explore
+description: The blog is organised around three pillars of the modern data and AI stack.
+permalink: /topics/
+prose: false
+---
+<div class="topic-grid">
+  {%- for topics_item in site.data.topics %}
+  {%- assign topics_item_key = topics_item[0] %}
+  {% include topic-card.html key=topics_item_key show_posts=true %}
+  {%- endfor %}
+</div>

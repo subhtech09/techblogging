@@ -1,0 +1,34 @@
+---
+layout: page
+title: Tags
+eyebrow: Explore
+description: Every tag used across the blog, with the articles that use it.
+permalink: /tags/
+prose: false
+---
+{%- assign tags_sorted = site.tags | sort -%}
+{%- if tags_sorted.size > 0 %}
+<div class="tag-cloud">
+  {%- for tag_item in tags_sorted %}
+  <a class="tag" href="#{{ tag_item[0] | slugify }}">#{{ tag_item[0] }} <span class="tag-count">{{ tag_item[1].size }}</span></a>
+  {%- endfor %}
+</div>
+
+{%- for tag_item in tags_sorted %}
+<section class="tag-group" id="{{ tag_item[0] | slugify }}">
+  <h2>#{{ tag_item[0] }}</h2>
+  <ul class="post-list">
+    {%- for tag_post in tag_item[1] %}
+    <li>
+      <a href="{{ tag_post.url | relative_url }}">
+        <span>{{ tag_post.title | escape }}</span>
+        <time datetime="{{ tag_post.date | date_to_xmlschema }}">{{ tag_post.date | date: "%b %-d, %Y" }}</time>
+      </a>
+    </li>
+    {%- endfor %}
+  </ul>
+</section>
+{%- endfor %}
+{%- else %}
+<div class="empty-state"><p>No tags yet.</p></div>
+{%- endif %}

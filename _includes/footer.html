@@ -1,0 +1,38 @@
+{%- assign site_author = site.data.authors[site.author] -%}
+<footer class="site-footer">
+  <div class="container footer-grid">
+    <div class="footer-brand">
+      <a class="brand" href="{{ '/' | relative_url }}">
+        {% include logo-mark.html %}
+        <span class="brand-name">{{ site.title }}</span>
+      </a>
+      <p>{{ site.description }}</p>
+      {% include social-links.html author=site_author %}
+    </div>
+
+    <div>
+      <h2 class="footer-heading">Topics</h2>
+      <ul>
+        {%- for topic in site.data.topics %}
+        <li><a href="{{ '/topics/' | append: topic[0] | append: '/' | relative_url }}">{{ topic[1].name }}</a></li>
+        {%- endfor %}
+      </ul>
+    </div>
+
+    <div>
+      <h2 class="footer-heading">Explore</h2>
+      <ul>
+        <li><a href="{{ '/blog/' | relative_url }}">All articles</a></li>
+        <li><a href="{{ '/tags/' | relative_url }}">Tags</a></li>
+        <li><a href="{{ '/search/' | relative_url }}">Search</a></li>
+        <li><a href="{{ '/about/' | relative_url }}">About</a></li>
+        <li><a href="{{ '/feed.xml' | relative_url }}">RSS feed</a></li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="container footer-bottom">
+    <p>&copy; {{ site.time | date: '%Y' }} {{ site_author.name | default: site.title }}. All rights reserved.</p>
+    <p>Built with Jekyll &middot; Hosted on GitHub Pages</p>
+  </div>
+</footer>

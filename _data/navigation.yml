@@ -1,0 +1,12 @@
+# Header navigation. URLs are relative to the site root (baseurl is added automatically).
+main:
+  - title: Articles
+    url: /blog/
+  - title: Data Architecture
+    url: /topics/data-architecture/
+  - title: Data Engineering
+    url: /topics/data-engineering/
+  - title: AI Engineering
+    url: /topics/ai-engineering/
+  - title: About
+    url: /about/

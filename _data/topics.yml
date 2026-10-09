@@ -1,0 +1,23 @@
+# The blog's content pillars. The key (e.g. data-architecture) is what you put
+# in a post's front matter as `category:`. Each key needs a matching page in
+# /topics/ (copy one of the existing ones).
+data-architecture:
+  name: Data Architecture
+  icon: architecture
+  description: >-
+    Lakehouses, warehouses, data mesh, modelling and the design decisions
+    behind modern data platforms.
+
+data-engineering:
+  name: Data Engineering
+  icon: pipeline
+  description: >-
+    Pipelines, streaming, orchestration, data quality and the craft of moving
+    data reliably at scale.
+
+ai-engineering:
+  name: AI Engineering
+  icon: ai
+  description: >-
+    LLM applications, RAG, agents, evaluation and MLOps — putting AI systems
+    into production.

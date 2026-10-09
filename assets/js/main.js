@@ -1,0 +1,412 @@
+/* ==========================================================================
+   The Data Blueprint — site behaviour (no dependencies)
+   ========================================================================== */
+(function () {
+  'use strict';
+
+  var root = document.documentElement;
+  var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* ---------- Theme toggle ---------------------------------------------- */
+  var themeBtn = document.querySelector('.theme-toggle');
+
+  function currentTheme() {
+    return root.getAttribute('data-theme') ||
+      (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+  }
+
+  function labelThemeButton() {
+    if (!themeBtn) return;
+    var label = currentTheme() === 'dark' ? 'Switch to light mode' : 'Switch to dark mode';
+    themeBtn.setAttribute('aria-label', label);
+    themeBtn.setAttribute('title', label);
+  }
+
+  function syncGiscusTheme(theme) {
+    var frame = document.querySelector('iframe.giscus-frame');
+    if (!frame) return;
+    frame.contentWindow.postMessage(
+      { giscus: { setConfig: { theme: theme === 'dark' ? 'transparent_dark' : 'light' } } },
+      'https://giscus.app'
+    );
+  }
+
+  if (themeBtn) {
+    labelThemeButton();
+    themeBtn.addEventListener('click', function () {
+      var next = currentTheme() === 'dark' ? 'light' : 'dark';
+      root.setAttribute('data-theme', next);
+      try { localStorage.setItem('theme', next); } catch (e) { /* storage unavailable */ }
+      labelThemeButton();
+      syncGiscusTheme(next);
+    });
+  }
+
+  /* ---------- Mobile navigation ----------------------------------------- */
+  var navToggle = document.querySelector('.nav-toggle');
+  if (navToggle) {
+    var setNav = function (open) {
+      document.body.classList.toggle('nav-open', open);
+      navToggle.setAttribute('aria-expanded', String(open));
+      navToggle.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+    };
+    navToggle.addEventListener('click', function () {
+      setNav(!document.body.classList.contains('nav-open'));
+    });
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && document.body.classList.contains('nav-open')) {
+        setNav(false);
+        navToggle.focus();
+      }
+    });
+    window.matchMedia('(min-width: 1024px)').addEventListener('change', function (mq) {
+      if (mq.matches) setNav(false);
+    });
+  }
+
+  /* ---------- "/" focuses search ---------------------------------------- */
+  document.addEventListener('keydown', function (e) {
+    if (e.key !== '/' || e.ctrlKey || e.metaKey || e.altKey) return;
+    var el = document.activeElement;
+    if (el && (/^(INPUT|TEXTAREA|SELECT)$/.test(el.tagName) || el.isContentEditable)) return;
+    e.preventDefault();
+    var input = document.getElementById('search-input');
+    if (input) { input.focus(); return; }
+    var link = document.querySelector('[data-search-link]');
+    if (link) window.location.href = link.href;
+  });
+
+  /* ---------- Clipboard helper ------------------------------------------ */
+  function copyText(text) {
+    if (navigator.clipboard && window.isSecureContext) {
+      return navigator.clipboard.writeText(text);
+    }
+    return new Promise(function (resolve, reject) {
+      var ta = document.createElement('textarea');
+      ta.value = text;
+      ta.setAttribute('readonly', '');
+      ta.style.position = 'fixed';
+      ta.style.opacity = '0';
+      document.body.appendChild(ta);
+      ta.select();
+      try { document.execCommand('copy') ? resolve() : reject(); } catch (err) { reject(err); }
+      document.body.removeChild(ta);
+    });
+  }
+
+  function flash(btn, doneLabel, resetLabel) {
+    btn.classList.add('is-done');
+    if (doneLabel !== undefined) btn.lastChild.textContent = doneLabel;
+    setTimeout(function () {
+      btn.classList.remove('is-done');
+      if (resetLabel !== undefined) btn.lastChild.textContent = resetLabel;
+    }, 1600);
+  }
+
+  /* ---------- Share: copy link ------------------------------------------ */
+  document.querySelectorAll('[data-copy-link]').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      copyText(btn.getAttribute('data-copy-link')).then(function () {
+        flash(btn);
+        btn.setAttribute('aria-label', 'Link copied');
+        setTimeout(function () { btn.setAttribute('aria-label', 'Copy link'); }, 1600);
+      });
+    });
+  });
+
+  var proses = document.querySelectorAll('.prose');
+  var postBody = document.querySelector('.post .prose');
+
+  /* ---------- Tables: horizontal scroll wrapper ------------------------- */
+  proses.forEach(function (prose) {
+    prose.querySelectorAll('table').forEach(function (table) {
+      if (table.parentElement.classList.contains('table-wrap')) return;
+      var wrap = document.createElement('div');
+      wrap.className = 'table-wrap';
+      table.parentNode.insertBefore(wrap, table);
+      wrap.appendChild(table);
+    });
+  });
+
+  /* ---------- Code blocks: language label + copy button ----------------- */
+  document.querySelectorAll('.prose div.highlighter-rouge, .prose figure.highlight').forEach(function (block) {
+    var pre = block.querySelector('pre');
+    if (!pre || block.querySelector('.code-toolbar')) return;
+
+    var bar = document.createElement('div');
+    bar.className = 'code-toolbar';
+
+    var match = block.className.match(/language-([\w+#-]+)/);
+    if (!match) {
+      var code = block.querySelector('code[data-lang]');
+      if (code) match = [null, code.getAttribute('data-lang')];
+    }
+    if (match && match[1] !== 'plaintext' && match[1] !== 'text') {
+      var lang = document.createElement('span');
+      lang.className = 'code-lang';
+      lang.textContent = match[1];
+      bar.appendChild(lang);
+    }
+
+    var btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'code-copy';
+    btn.setAttribute('aria-label', 'Copy code to clipboard');
+    btn.innerHTML = '<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg><span>Copy</span>';
+    btn.addEventListener('click', function () {
+      var codeEl = pre.querySelector('code') || pre;
+      copyText(codeEl.innerText.replace(/\n$/, '')).then(function () {
+        flash(btn, 'Copied', 'Copy');
+      });
+    });
+    bar.appendChild(btn);
+    block.insertBefore(bar, block.firstChild);
+  });
+
+  /* ---------- Table of contents + heading anchors ----------------------- */
+  var tocNav = document.getElementById('toc');
+  var tocLinks = [];
+
+  if (postBody) {
+    var headings = Array.prototype.slice.call(postBody.querySelectorAll('h2[id], h3[id]'));
+
+    if (tocNav) {
+      if (headings.length < 2) {
+        var aside = document.querySelector('.post-toc');
+        if (aside) aside.parentNode.removeChild(aside);
+        var layout = document.querySelector('.post-layout');
+        if (layout) layout.classList.add('post-layout--no-toc');
+      } else {
+        var list = document.createElement('ol');
+        var lastTop = null;
+        var sub = null;
+        headings.forEach(function (h) {
+          var li = document.createElement('li');
+          var a = document.createElement('a');
+          a.href = '#' + h.id;
+          a.textContent = h.textContent;
+          li.appendChild(a);
+          if (h.tagName === 'H3' && lastTop) {
+            if (!sub) { sub = document.createElement('ol'); lastTop.appendChild(sub); }
+            sub.appendChild(li);
+          } else {
+            list.appendChild(li);
+            lastTop = li;
+            sub = null;
+          }
+          tocLinks.push({ link: a, heading: h });
+        });
+        tocNav.appendChild(list);
+
+        // Open as a rail on desktop, collapsed card on small screens.
+        var details = tocNav.closest('details');
+        if (details) {
+          var wide = window.matchMedia('(min-width: 1100px)');
+          var syncDetails = function () { details.open = wide.matches; };
+          syncDetails();
+          wide.addEventListener('change', syncDetails);
+          tocNav.addEventListener('click', function (e) {
+            if (e.target.closest('a') && !wide.matches) details.open = false;
+          });
+        }
+      }
+    }
+
+    headings.forEach(function (h) {
+      var anchor = document.createElement('a');
+      anchor.className = 'heading-anchor';
+      anchor.href = '#' + h.id;
+      anchor.setAttribute('aria-label', 'Link to section: ' + h.textContent);
+      anchor.textContent = '#';
+      h.appendChild(anchor);
+    });
+  }
+
+  /* ---------- Scroll: reading progress + active TOC entry --------------- */
+  var progressBar = document.querySelector('.reading-progress span');
+  if (postBody && (progressBar || tocLinks.length)) {
+    var ticking = false;
+    var activeLink = null;
+
+    var onScroll = function () {
+      ticking = false;
+      var viewportH = window.innerHeight;
+
+      if (progressBar) {
+        var rect = postBody.getBoundingClientRect();
+        var total = rect.height - viewportH * 0.6;
+        var progress = total > 0 ? (viewportH * 0.4 - rect.top) / total : 1;
+        progressBar.style.transform = 'scaleX(' + Math.min(1, Math.max(0, progress)) + ')';
+      }
+
+      if (tocLinks.length) {
+        var current = null;
+        for (var i = 0; i < tocLinks.length; i++) {
+          if (tocLinks[i].heading.getBoundingClientRect().top <= 140) current = tocLinks[i].link;
+          else break;
+        }
+        if (current !== activeLink) {
+          if (activeLink) activeLink.classList.remove('is-active');
+          if (current) current.classList.add('is-active');
+          activeLink = current;
+        }
+      }
+    };
+
+    window.addEventListener('scroll', function () {
+      if (!ticking) { ticking = true; window.requestAnimationFrame(onScroll); }
+    }, { passive: true });
+    window.addEventListener('resize', onScroll);
+    onScroll();
+  }
+
+  /* ---------- Lightbox for diagrams and images -------------------------- */
+  var zoomables = [];
+  proses.forEach(function (prose) {
+    prose.querySelectorAll('img').forEach(function (img) {
+      if (!img.closest('a')) zoomables.push(img);
+    });
+  });
+
+  if (zoomables.length && typeof HTMLDialogElement === 'function') {
+    var dlg = document.createElement('dialog');
+    dlg.className = 'lightbox';
+    dlg.setAttribute('aria-label', 'Image viewer');
+    dlg.innerHTML =
+      '<div class="lightbox-toolbar">' +
+        '<span class="lightbox-caption"></span>' +
+        '<button type="button" class="lightbox-btn" data-action="zoom">Actual size</button>' +
+        '<a class="lightbox-btn" data-action="open" target="_blank" rel="noopener">Open original</a>' +
+        '<button type="button" class="lightbox-btn lightbox-close" data-action="close" aria-label="Close">' +
+          '<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg>' +
+        '</button>' +
+      '</div>' +
+      '<div class="lightbox-stage"><img alt=""></div>';
+    document.body.appendChild(dlg);
+
+    var stage = dlg.querySelector('.lightbox-stage');
+    var bigImg = stage.querySelector('img');
+    var caption = dlg.querySelector('.lightbox-caption');
+    var zoomBtn = dlg.querySelector('[data-action="zoom"]');
+    var openLink = dlg.querySelector('[data-action="open"]');
+    var lastTrigger = null;
+
+    var setActual = function (on, clientX, clientY) {
+      var rect = bigImg.getBoundingClientRect();
+      var rx = clientX !== undefined ? (clientX - rect.left) / rect.width : 0.5;
+      var ry = clientY !== undefined ? (clientY - rect.top) / rect.height : 0.5;
+      stage.classList.toggle('is-actual', on);
+      zoomBtn.textContent = on ? 'Fit to screen' : 'Actual size';
+      if (on) {
+        stage.scrollLeft = rx * bigImg.naturalWidth - stage.clientWidth / 2;
+        stage.scrollTop = ry * bigImg.naturalHeight - stage.clientHeight / 2;
+      }
+    };
+
+    var openLightbox = function (img) {
+      lastTrigger = img;
+      var src = img.currentSrc || img.src;
+      bigImg.src = src;
+      bigImg.alt = img.alt || '';
+      openLink.href = src;
+      var fig = img.closest('figure');
+      var cap = fig && fig.querySelector('figcaption');
+      caption.textContent = (cap && cap.textContent.trim()) || img.alt || '';
+      setActual(false);
+      document.body.style.overflow = 'hidden';
+      dlg.showModal();
+    };
+
+    dlg.addEventListener('close', function () {
+      document.body.style.overflow = '';
+      if (lastTrigger) lastTrigger.focus({ preventScroll: true });
+    });
+
+    zoomBtn.addEventListener('click', function () {
+      setActual(!stage.classList.contains('is-actual'));
+    });
+    dlg.querySelector('[data-action="close"]').addEventListener('click', function () { dlg.close(); });
+
+    // Click the image to toggle actual size; click the empty stage to close.
+    // In actual-size mode, drag to pan.
+    var drag = null;
+    stage.addEventListener('pointerdown', function (e) {
+      if (!stage.classList.contains('is-actual') || e.button !== 0) return;
+      drag = { x: e.clientX, y: e.clientY, left: stage.scrollLeft, top: stage.scrollTop, moved: false };
+      stage.setPointerCapture(e.pointerId);
+    });
+    stage.addEventListener('pointermove', function (e) {
+      if (!drag) return;
+      var dx = e.clientX - drag.x;
+      var dy = e.clientY - drag.y;
+      if (Math.abs(dx) + Math.abs(dy) > 4) { drag.moved = true; stage.classList.add('is-dragging'); }
+      stage.scrollLeft = drag.left - dx;
+      stage.scrollTop = drag.top - dy;
+    });
+    var endDrag = function () { stage.classList.remove('is-dragging'); };
+    stage.addEventListener('pointerup', endDrag);
+    stage.addEventListener('pointercancel', function () { drag = null; endDrag(); });
+
+    stage.addEventListener('click', function (e) {
+      var wasDrag = drag && drag.moved;
+      drag = null;
+      if (wasDrag) return;
+      if (e.target === bigImg) setActual(!stage.classList.contains('is-actual'), e.clientX, e.clientY);
+      else if (!stage.classList.contains('is-actual')) dlg.close();
+    });
+
+    zoomables.forEach(function (img) {
+      img.classList.add('zoomable');
+      img.setAttribute('tabindex', '0');
+      img.setAttribute('role', 'button');
+      img.setAttribute('aria-label', 'Enlarge image' + (img.alt ? ': ' + img.alt : ''));
+      img.addEventListener('click', function () { openLightbox(img); });
+      img.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openLightbox(img); }
+      });
+    });
+  }
+
+  /* ---------- Blog page: filter by topic -------------------------------- */
+  var filterBar = document.querySelector('[data-filter-bar]');
+  if (filterBar) {
+    var chips = filterBar.querySelectorAll('[data-filter]');
+    var cards = document.querySelectorAll('#post-grid [data-topic]');
+    var empty = document.querySelector('[data-filter-empty]');
+
+    var applyFilter = function (filter) {
+      var shown = 0;
+      chips.forEach(function (chip) {
+        var on = chip.getAttribute('data-filter') === filter;
+        chip.classList.toggle('is-active', on);
+        chip.setAttribute('aria-pressed', String(on));
+      });
+      cards.forEach(function (card) {
+        var show = filter === 'all' || card.getAttribute('data-topic') === filter;
+        card.hidden = !show;
+        if (show) shown++;
+      });
+      if (empty) empty.hidden = shown > 0;
+    };
+
+    chips.forEach(function (chip) {
+      chip.addEventListener('click', function () {
+        var filter = chip.getAttribute('data-filter');
+        applyFilter(filter);
+        var url = new URL(window.location.href);
+        if (filter === 'all') url.searchParams.delete('topic');
+        else url.searchParams.set('topic', filter);
+        history.replaceState(null, '', url);
+      });
+    });
+
+    var initial = new URLSearchParams(window.location.search).get('topic');
+    if (initial) {
+      chips.forEach(function (chip) {
+        if (chip.getAttribute('data-filter') === initial) applyFilter(initial);
+      });
+    }
+  }
+
+  if (reduceMotion) root.style.scrollBehavior = 'auto';
+})();

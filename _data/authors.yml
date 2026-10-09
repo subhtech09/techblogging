@@ -1,0 +1,14 @@
+# Author profiles. `author: subhasis` in a post (or in _config.yml) points here.
+# Leave a link blank ("") to hide its icon.
+subhasis:
+  name: Subhasis Mukherjee
+  role: Data & AI Engineering              # edit me
+  bio: >-
+    I design and build data platforms and AI systems. This blog is where I
+    write down the architectures, trade-offs and lessons learned along the way.
+  avatar: ""                               # e.g. /assets/images/avatar.jpg — initials are shown when blank
+  links:
+    github: https://github.com/subhtech09
+    linkedin: ""                           # e.g. https://www.linkedin.com/in/your-handle
+    x: ""
+    email: ""                              # e.g. you@example.com

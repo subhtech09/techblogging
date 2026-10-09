@@ -1,0 +1,28 @@
+---
+layout: page
+title: All articles
+eyebrow: Articles
+description: Everything published so far, newest first. Filter by topic or use search to find something specific.
+permalink: /blog/
+prose: false
+---
+<div class="filter-bar" data-filter-bar role="group" aria-label="Filter articles by topic">
+  <button class="filter-chip is-active" type="button" data-filter="all" aria-pressed="true">All <span>{{ site.posts.size }}</span></button>
+  {%- for blog_topic in site.data.topics %}
+  {%- assign blog_topic_key = blog_topic[0] %}
+  {%- assign blog_topic_count = site.posts | where_exp: "p", "p.categories contains blog_topic_key" | size %}
+  <button class="filter-chip" type="button" data-filter="{{ blog_topic_key }}" aria-pressed="false">{{ blog_topic[1].name }} <span>{{ blog_topic_count }}</span></button>
+  {%- endfor %}
+  <a class="filter-search" href="{{ '/search/' | relative_url }}">{% include icon.html name="search" %} Search</a>
+</div>
+
+{%- if site.posts.size > 0 %}
+<div class="post-grid" id="post-grid">
+  {%- for post in site.posts %}
+  {% include post-card.html post=post %}
+  {%- endfor %}
+</div>
+{%- endif %}
+<div class="empty-state" data-filter-empty{% if site.posts.size > 0 %} hidden{% endif %}>
+  <p>No articles here yet — check back soon.</p>
+</div>

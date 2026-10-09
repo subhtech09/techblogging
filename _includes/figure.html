@@ -1,0 +1,27 @@
+{%- comment -%}
+  Diagram / image with caption and click-to-enlarge.
+
+  Usage inside a post (put it on its own line, with a blank line above and below):
+    {% include figure.html src="my-diagram.jpg" alt="What the diagram shows" caption="**Figure 1.** Short caption" %}
+
+  - `src` with no "/" is looked up in  assets/images/posts/<post-slug>/
+  - `src` with a "/" is used as given, e.g. "/assets/images/shared/legend.jpg"
+  - `alt` describes the diagram for screen readers (falls back to the caption)
+  - `caption` supports inline Markdown
+{%- endcomment -%}
+{%- assign fig_src = include.src -%}
+{%- unless fig_src contains "/" -%}
+  {%- assign fig_src = "/assets/images/posts/" | append: page.slug | append: "/" | append: include.src -%}
+{%- endunless -%}
+{%- unless fig_src contains "://" -%}
+  {%- assign fig_src = fig_src | relative_url -%}
+{%- endunless -%}
+<figure class="diagram{% if include.class %} {{ include.class }}{% endif %}">
+<div class="diagram-frame">
+<img src="{{ fig_src }}" alt="{{ include.alt | default: include.caption | strip_html | escape }}" loading="lazy" decoding="async">
+<span class="diagram-hint" aria-hidden="true">{% include icon.html name="zoom" %} Enlarge</span>
+</div>
+{%- if include.caption %}
+<figcaption>{{ include.caption | markdownify | remove: "<p>" | remove: "</p>" | strip }}</figcaption>
+{%- endif %}
+</figure>

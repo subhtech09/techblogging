@@ -1,0 +1,14 @@
+{%- comment -%} Usage: {% include author-card.html author=some_author %} {%- endcomment -%}
+{%- assign ac_author = include.author -%}
+{%- if ac_author -%}
+<section class="author-card" aria-label="About the author">
+  {% include avatar.html author=ac_author size="lg" %}
+  <div class="author-card-body">
+    <p class="author-card-eyebrow">{{ include.eyebrow | default: "Written by" }}</p>
+    <h2 class="author-card-name">{{ ac_author.name }}</h2>
+    {%- if ac_author.role %}<p class="author-card-role">{{ ac_author.role }}</p>{% endif %}
+    {%- if ac_author.bio %}<p class="author-card-bio">{{ ac_author.bio }}</p>{% endif %}
+    {% include social-links.html author=ac_author class="social-links--light" %}
+  </div>
+</section>
+{%- endif -%}

@@ -1,0 +1,8 @@
+{%- comment -%} Usage: {% include avatar.html author=some_author size="lg" %} {%- endcomment -%}
+{%- assign av_author = include.author -%}
+{%- if av_author.avatar and av_author.avatar != "" -%}
+<span class="avatar{% if include.size %} avatar--{{ include.size }}{% endif %}"><img src="{{ av_author.avatar | relative_url }}" alt="" loading="lazy"></span>
+{%- else -%}
+{%- assign av_parts = av_author.name | split: " " -%}
+<span class="avatar{% if include.size %} avatar--{{ include.size }}{% endif %}" aria-hidden="true">{{ av_parts.first | slice: 0 }}{% if av_parts.size > 1 %}{{ av_parts.last | slice: 0 }}{% endif %}</span>
+{%- endif -%}

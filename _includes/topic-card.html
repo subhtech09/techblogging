@@ -1,0 +1,17 @@
+{%- comment -%} Usage: {% include topic-card.html key="data-architecture" show_posts=true %} {%- endcomment -%}
+{%- assign tc_key = include.key -%}
+{%- assign tc_topic = site.data.topics[tc_key] -%}
+{%- assign tc_posts = site.posts | where_exp: "p", "p.categories contains tc_key" -%}
+<article class="topic-card">
+  <div class="topic-card-icon">{% include icon.html name=tc_topic.icon %}</div>
+  <h3 class="topic-card-title"><a href="{{ '/topics/' | append: tc_key | append: '/' | relative_url }}">{{ tc_topic.name }}</a></h3>
+  <p class="topic-card-desc">{{ tc_topic.description }}</p>
+  {%- if include.show_posts and tc_posts.size > 0 %}
+  <ul class="topic-card-posts">
+    {%- for tc_p in tc_posts limit: 3 %}
+    <li><a href="{{ tc_p.url | relative_url }}">{{ tc_p.title | escape }}</a></li>
+    {%- endfor %}
+  </ul>
+  {%- endif %}
+  <p class="topic-card-count">{{ tc_posts.size }} article{% if tc_posts.size != 1 %}s{% endif %} {% include icon.html name="arrow-right" %}</p>
+</article>
