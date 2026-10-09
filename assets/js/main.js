@@ -1,5 +1,5 @@
 /* ==========================================================================
-   The Data Blueprint — site behaviour (no dependencies)
+   The Architect's Handbook — site behaviour (no dependencies)
    ========================================================================== */
 (function () {
   'use strict';
@@ -59,7 +59,7 @@
         navToggle.focus();
       }
     });
-    window.matchMedia('(min-width: 1024px)').addEventListener('change', function (mq) {
+    window.matchMedia('(min-width: 1100px)').addEventListener('change', function (mq) {
       if (mq.matches) setNav(false);
     });
   }

@@ -2,7 +2,7 @@
 {%- assign tc_key = include.key -%}
 {%- assign tc_topic = site.data.topics[tc_key] -%}
 {%- assign tc_posts = site.posts | where_exp: "p", "p.categories contains tc_key" -%}
-<article class="topic-card">
+<article class="topic-card tone-{{ tc_topic.tone | default: 'green' }}">
   <div class="topic-card-icon">{% include icon.html name=tc_topic.icon %}</div>
   <h3 class="topic-card-title"><a href="{{ '/topics/' | append: tc_key | append: '/' | relative_url }}">{{ tc_topic.name }}</a></h3>
   <p class="topic-card-desc">{{ tc_topic.description }}</p>

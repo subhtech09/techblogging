@@ -22,7 +22,7 @@ scripts:
     <h2 class="footer-heading">Browse by topic</h2>
     <div class="tag-cloud">
       {%- for search_topic in site.data.topics %}
-      <a class="chip" href="{{ '/topics/' | append: search_topic[0] | append: '/' | relative_url }}">{{ search_topic[1].name }}</a>
+      <a class="chip tone-{{ search_topic[1].tone | default: 'green' }}" href="{{ '/topics/' | append: search_topic[0] | append: '/' | relative_url }}">{{ search_topic[1].name }}</a>
       {%- endfor %}
     </div>
     {%- assign search_tags = site.tags | sort %}

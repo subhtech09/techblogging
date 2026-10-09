@@ -3,7 +3,7 @@ layout: default
 ---
 {%- assign home_hero = page.hero -%}
 {%- assign home_author = site.data.authors[site.author] -%}
-<section class="hero band-dark">
+<section class="hero band">
   <div class="container hero-inner">
     <div class="hero-copy">
       <p class="eyebrow">{{ home_hero.eyebrow | default: site.tagline }}</p>
@@ -11,7 +11,7 @@ layout: default
       <p class="hero-lede">{{ home_hero.lede | default: site.description }}</p>
       <div class="hero-actions">
         <a class="btn btn-primary" href="{{ '/blog/' | relative_url }}">Read the articles {% include icon.html name="arrow-right" %}</a>
-        <a class="btn btn-ghost" href="{{ '/topics/' | relative_url }}">Browse topics</a>
+        <a class="btn btn-secondary" href="{{ '/topics/' | relative_url }}">Browse topics</a>
       </div>
       {%- assign home_latest = site.posts.first -%}
       {%- if home_latest %}
@@ -82,17 +82,17 @@ layout: default
 
 <section class="section section--flush">
   <div class="container">
-    <div class="cta-band band-dark">
+    <div class="cta-band band">
       <div class="cta-copy">
-        <h2>Never miss a new blueprint</h2>
+        <h2>Never miss a new chapter</h2>
         <p>Subscribe with any feed reader to get new articles as soon as they are published.</p>
       </div>
       <div class="cta-actions">
         <a class="btn btn-primary" href="{{ '/feed.xml' | relative_url }}">{% include icon.html name="rss" %} Subscribe via RSS</a>
         {%- if home_author.links.linkedin and home_author.links.linkedin != "" %}
-        <a class="btn btn-ghost" href="{{ home_author.links.linkedin }}">{% include icon.html name="linkedin" %} Follow on LinkedIn</a>
+        <a class="btn btn-secondary" href="{{ home_author.links.linkedin }}">{% include icon.html name="linkedin" %} Follow on LinkedIn</a>
         {%- elsif home_author.links.github and home_author.links.github != "" %}
-        <a class="btn btn-ghost" href="{{ home_author.links.github }}">{% include icon.html name="github" %} Follow on GitHub</a>
+        <a class="btn btn-secondary" href="{{ home_author.links.github }}">{% include icon.html name="github" %} Follow on GitHub</a>
         {%- endif %}
       </div>
     </div>

@@ -1,9 +1,12 @@
 # The blog's content pillars. The key (e.g. data-architecture) is what you put
 # in a post's front matter as `category:`. Each key needs a matching page in
 # /topics/ (copy one of the existing ones).
+#
+# tone: colour tint used for the topic's chips, cards and icons — blue | green | teal
 data-architecture:
   name: Data Architecture
   icon: architecture
+  tone: blue
   description: >-
     Lakehouses, warehouses, data mesh, modelling and the design decisions
     behind modern data platforms.
@@ -11,6 +14,7 @@ data-architecture:
 data-engineering:
   name: Data Engineering
   icon: pipeline
+  tone: green
   description: >-
     Pipelines, streaming, orchestration, data quality and the craft of moving
     data reliably at scale.
@@ -18,6 +22,7 @@ data-engineering:
 ai-engineering:
   name: AI Engineering
   icon: ai
+  tone: teal
   description: >-
     LLM applications, RAG, agents, evaluation and MLOps — putting AI systems
     into production.

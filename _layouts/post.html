@@ -10,7 +10,7 @@ layout: default
 <div class="reading-progress" aria-hidden="true"><span></span></div>
 
 <article class="post">
-  <header class="post-hero band-dark">
+  <header class="post-hero band">
     <div class="container">
       <div class="post-hero-inner">
         <nav class="breadcrumbs" aria-label="Breadcrumb">
@@ -24,7 +24,7 @@ layout: default
         </nav>
 
         {%- if post_topic %}
-        <a class="chip chip--on-dark" href="{{ post_topic_url }}">{% include icon.html name=post_topic.icon %}{{ post_topic.name }}</a>
+        <a class="chip chip--lg tone-{{ post_topic.tone | default: 'green' }}" href="{{ post_topic_url }}">{% include icon.html name=post_topic.icon %}{{ post_topic.name }}</a>
         {%- endif %}
 
         <h1 class="post-title">{{ page.title | escape }}</h1>

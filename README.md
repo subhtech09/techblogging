@@ -1,11 +1,11 @@
-# The Data Blueprint
+# The Architect's Handbook
 
 A static tech blog about **data architecture, data engineering and AI engineering**,
 built with [Jekyll](https://jekyllrb.com/) and hosted on **GitHub Pages**.
 
 Live URL (once Pages is enabled): **https://subhtech09.github.io/techblogging/**
 
-- Brick-red and deep-green palette with automatic light and dark mode
+- Light mint-green and sky-blue palette with automatic light and dark mode
 - Articles are Markdown files; architecture diagrams are plain `.jpg` files
 - Click-to-enlarge diagram viewer (fit to screen, actual size, drag to pan)
 - Auto-generated table of contents, reading progress bar, code copy buttons
@@ -146,13 +146,13 @@ podman run --rm -it -p 4000:4000 -v "${PWD}:/srv" -w /srv ruby:3.3 bash -c "bund
 | Blog name, tagline, description, URL | `_config.yml` |
 | Your name, role, bio, avatar, social links | `_data/authors.yml` |
 | Header menu | `_data/navigation.yml` |
-| Topics (names, descriptions, icons) | `_data/topics.yml`, plus one page per topic in `topics/` |
+| Topics (names, descriptions, icons, colour tint) | `_data/topics.yml`, plus one page per topic in `topics/` |
 | Home page headline | front matter of `index.html` |
 | About page | `about.md` |
-| Colours and fonts | top of `assets/css/main.css` (`--brick-*`, `--green-*`, `--oat-*`) |
+| Colours and fonts | top of `assets/css/main.css` (`--mint-*`, `--sky-*`, `--ink-*`); fonts are loaded in `_includes/head.html` |
 | Social preview image | `assets/images/og-default.jpg`; regenerate with `tools\make-og-image.ps1 -Title "..."` |
 
-**Adding a topic:** add an entry to `_data/topics.yml`, copy one of the files in
+**Adding a topic:** add an entry to `_data/topics.yml` (pick a `tone`: `blue`, `green` or `teal`), copy one of the files in
 `topics/`, change `topic:`, `title:` and `permalink:`, and add it to
 `_data/navigation.yml` if it should appear in the header.
 
